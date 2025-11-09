@@ -1,4 +1,7 @@
-class Parser {
+// parser.js
+import { Diagnostic } from "./diagnostic.js";
+
+export class Parser {
   constructor(tokens, logCallback) {
     this.tokens = tokens;
     this.pos = 0;
@@ -11,25 +14,25 @@ class Parser {
 
   eat(type) {
     if (this.current().type === type) {
-      this.log(`[S] Aceptado: ${type}`, "success");
+      this.log(Diagnostic.success(`Aceptado: ${type}`));
       this.pos++;
     } else {
       const msg = `Error sintáctico: se esperaba '${type}' pero se encontró '${this.current().value}'`;
-      this.log(`[E] ${msg}`, "error");
+      this.log(Diagnostic.error(msg, 1142));
       throw new Error(msg);
     }
   }
 
   parse() {
-    this.log("🔍 Iniciando análisis sintáctico...", "info");
+    this.log(Diagnostic.info("🔍 Iniciando análisis sintáctico..."));
     this.S();
     if (this.current().type === ";") this.eat(";");
     if (this.current().type !== "$") {
       const msg = `Error: entrada no consumida en '${this.current().value}'`;
-      this.log(`[E] ${msg}`, "error");
+      this.log(Diagnostic.error(msg, 1396));
       throw new Error(msg);
     }
-    this.log("Análisis sintáctico completado correctamente.", "success");
+    this.log(Diagnostic.success("Análisis sintáctico completado correctamente."));
   }
 
   S() {
@@ -68,11 +71,9 @@ class Parser {
     this.eat("PRIV_TYPE");
 
     if (this.current().type === "(") {
-
       if (priv === "SELECT") {
-        this.log(`[W] MariaDB NO soporta SELECT(col1,col2) en REVOKE`, "warning");
+        this.log(Diagnostic.warning("MariaDB no soporta SELECT(col1,col2) en REVOKE", 1143));
       }
-
       this.eat("(");
       this.COLUMN_LIST();
       this.eat(")");

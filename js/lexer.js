@@ -1,4 +1,7 @@
-function lexer(input, logCallback) {
+// lexer.js
+import { Diagnostic } from "./diagnostic.js";
+
+export function lexer(input, logCallback) {
   const tokens = [];
 
   const words = input
@@ -22,11 +25,11 @@ function lexer(input, logCallback) {
     } else if ([",", "(", ")", ";"].includes(word)) {
       token = { type: word, value: word };
     } else {
-      logCallback(`Token no reconocido: '${word}'`, "error", 1102);
+      logCallback(Diagnostic.error(`Token no reconocido: '${word}'`, 1102));
       throw new Error(`Token no reconocido: '${word}'`);
     }
 
-     logCallback(`Tokenizado: ${token.type} (${token.value})`, "info");
+    logCallback(Diagnostic.info(`Tokenizado: ${token.type} (${token.value})`));
     tokens.push(token);
   }
 

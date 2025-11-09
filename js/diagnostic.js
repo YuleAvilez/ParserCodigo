@@ -1,3 +1,4 @@
+// diagnostic.js
 export class Diagnostic {
   static info(message) {
     return { type: "info", code: 1000, message };
@@ -8,14 +9,27 @@ export class Diagnostic {
   }
 
   static warning(message, code) {
-    const warningCodes = [1133, 1269, 1131, 1874];
-    const randomCode = code || warningCodes[Math.floor(Math.random() * warningCodes.length)];
-    return { type: "warning", code: randomCode, message };
+    const warningCatalog = {
+      1133: "Usuario o rol no existe",
+      1269: "Privilegios duplicados ignorados",
+      1131: "Usuario ya no tiene esos privilegios",
+      1874: "Uso de palabra reservada o deprecada",
+      1143: "MariaDB no soporta SELECT(col1,col2) en REVOKE"
+    };
+    const finalCode = code || 1133;
+    return { type: "warning", code: finalCode, message: message || warningCatalog[finalCode] };
   }
 
   static error(message, code) {
-    const errorCodes = [1141, 1049, 1102, 1396, 1227, 1142, 1143];
-    const randomCode = code || errorCodes[Math.floor(Math.random() * errorCodes.length)];
-    return { type: "error", code: randomCode, message };
+    const errorCatalog = {
+      1141: "No existe un GRANT compatible para hacer REVOKE",
+      1049: "Base de datos desconocida",
+      1102: "Token no reconocido",
+      1396: "No puedes modificar privilegios del usuario actual",
+      1227: "Acceso denegado; privilegios insuficientes",
+      1142: "Error de sintaxis: privilegio no permitido en REVOKE"
+    };
+    const finalCode = code || 1141;
+    return { type: "error", code: finalCode, message: message || errorCatalog[finalCode] };
   }
 }

@@ -29,7 +29,7 @@ export function lexer(input, logCallback) {
       throw new Error(`Token no reconocido: '${word}'`);
     }
 
-    logCallback(Diagnostic.info(`Tokenizado: ${token.type} (${token.value})`));
+    logCallback(Diagnostic.info(`Iniciando análisis lexico: ${token.type} (${token.value})`));
     tokens.push(token);
   }
 

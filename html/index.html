@@ -12,7 +12,6 @@
   <button id="btn-analizar">Analizar</button>
 
   <div id="result"></div>
-
   <div id="console-output" class="console"></div>
 
   <div id="tables-container">
@@ -20,13 +19,11 @@
     <div id="warnings-table" class="warning-table"></div>
   </div>
 
-  <script type="module">
-    import { lexer } from "../js/lexer.js";
-    import { Parser } from "../js/parser.js";
-    import { Diagnostic } from "../js/diagnostic.js";
-    import { analizar } from "../js/app.js";
-
-    // Vincular botón principal
+  <script src="../js/diagnostic.js"></script>
+  <script src="../js/lexer.js"></script>
+  <script src="../js/parser.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
     document.getElementById("btn-analizar").addEventListener("click", analizar);
   </script>
 </body>

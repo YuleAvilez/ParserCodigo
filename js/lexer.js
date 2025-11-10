@@ -1,7 +1,4 @@
-// lexer.js
-import { Diagnostic } from "./diagnostic.js";
-
-export function lexer(input, logCallback) {
+function lexer(input, logCallback) {
   const tokens = [];
 
   const words = input
@@ -36,3 +33,5 @@ export function lexer(input, logCallback) {
   tokens.push({ type: "$", value: "$" });
   return tokens;
 }
+
+window.lexer = lexer;

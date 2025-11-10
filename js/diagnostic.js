@@ -1,6 +1,4 @@
-// diagnostic.js
-export class Diagnostic {
-  // ✅ Catálogos accesibles desde otras partes del programa
+class Diagnostic {
   static warningCatalog = {
     1133: "Usuario o rol no existe",
     1269: "Privilegios duplicados ignorados",
@@ -38,3 +36,5 @@ export class Diagnostic {
     return { type: "error", code: finalCode, message: finalMessage };
   }
 }
+
+window.Diagnostic = Diagnostic;

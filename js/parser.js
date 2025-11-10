@@ -1,41 +1,39 @@
-    // parser.js
-    import { Diagnostic } from "./diagnostic.js";
+class Parser {
+  constructor(tokens, logCallback) {
+    this.tokens = tokens;
+    this.pos = 0;
+    this.log = logCallback;
+  }
 
-    export class Parser {
-    constructor(tokens, logCallback) {
-        this.tokens = tokens;
-        this.pos = 0;
-        this.log = logCallback;
-    }
-
-    current() {
+  current() {
         return this.tokens[this.pos];
     }
 
-    eat(type) {
-        if (this.current().type === type) {
-        this.log(Diagnostic.success(`Aceptado: ${type}`));
-        this.pos++;
-        } else {
-        const msg = `Error sintáctico: se esperaba '${type}' pero se encontró '${this.current().value}'`;
-        this.log(Diagnostic.error(msg, 1142));
-        throw new Error(msg);
-        }
-    }
 
-    parse() {
-        this.log(Diagnostic.info("Iniciando análisis sintáctico..."));
-        this.S();
-        if (this.current().type === ";") this.eat(";");
-        if (this.current().type !== "$") {
-        const msg = `Error: entrada no consumida en '${this.current().value}'`;
-        this.log(Diagnostic.error(msg, 1396));
-        throw new Error(msg);
-        }
-        this.log(Diagnostic.success("Análisis sintáctico completado correctamente."));
+  eat(type) {
+    if (this.current().type === type) {
+      this.log(Diagnostic.success(`Aceptado: ${type}`));
+      this.pos++;
+    } else {
+      const msg = `Error sintáctico: se esperaba '${type}' pero se encontró '${this.current().value}'`;
+      this.log(Diagnostic.error(msg, 1142));
+      throw new Error(msg);
     }
+  }
 
-    S() {
+  parse() {
+    this.log(Diagnostic.info("Iniciando análisis sintáctico..."));
+    this.S();
+    if (this.current().type === ";") this.eat(";");
+    if (this.current().type !== "$") {
+      const msg = `Error: entrada no consumida en '${this.current().value}'`;
+      this.log(Diagnostic.error(msg, 1396));
+      throw new Error(msg);
+    }
+    this.log(Diagnostic.success("Análisis sintáctico completado correctamente."));
+  }
+
+      S() {
         this.eat("REVOKE");
         this.REST();
     }
@@ -96,3 +94,4 @@
         }
     }
     }
+window.Parser = Parser;

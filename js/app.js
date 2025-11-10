@@ -2,7 +2,11 @@
 const collectedDiagnostics = [];
 
 function logMessage(diag) {
-  const exists = collectedDiagnostics.some(d => d.code === diag.code && d.message === diag.message);
+  const baseMessage = diag.message.replace(/^Línea \d+: /, "");
+
+  const exists = collectedDiagnostics.some(
+    d => d.code === diag.code && d.message.replace(/^Línea \d+: /, "") === baseMessage
+  );
   if (exists) return;
 
   collectedDiagnostics.push(diag);
@@ -14,6 +18,7 @@ function logMessage(diag) {
   consoleOut.appendChild(div);
   consoleOut.scrollTop = consoleOut.scrollHeight;
 }
+
 
 function renderErrorTable(diags) {
   const table = document.getElementById("errors-table");
@@ -37,29 +42,40 @@ function renderErrorTable(diags) {
 
 function analizar() {
   const input = document.getElementById("input").value.trim();
+  const lines = input.split("\n");
   collectedDiagnostics.length = 0;
   document.getElementById("console-output").innerHTML = "";
 
-  try {
-    logMessage(Diagnostic.info("Iniciando análisis léxico y sintáctico..."));
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    if (trimmed.toUpperCase().startsWith("REVOKE")) {
+      logMessage(Diagnostic.info(`Analizando línea ${index + 1}: ${trimmed}`));
 
-    const tokens = lexer(input, logMessage);
-    const parser = new Parser(tokens, logMessage);
+      try {
+        const tokens = lexer(trimmed, logMessage);
+        const parser = new Parser(tokens, logMessage);
+        parser.parse();
 
-    parser.parse();
+        logMessage(Diagnostic.success(`Línea ${index + 1} válida`));
 
-    logMessage(Diagnostic.success("Instrucción válida según gramática REVOKE (MariaDB)"));
-
-    if (input.toUpperCase().includes("SELECT(")) {
-      logMessage(Diagnostic.warning("MariaDB no soporta SELECT(col1,col2) en REVOKE", 1143));
+        if (trimmed.toUpperCase().includes("SELECT(")) {
+          logMessage(Diagnostic.warning(
+            `Línea ${index + 1}: MariaDB no soporta SELECT(col1,col2) en REVOKE`,
+            1143
+          ));
+        }
+      } catch (err) {
+        const already = collectedDiagnostics.some(d => d.message === err.message);
+        if (!already) logMessage(Diagnostic.error(`Línea ${index + 1}: ${err.message}`, 1141));
+      }
+    } else {
+      logMessage(Diagnostic.info(`Línea ${index + 1} ignorada (no empieza con REVOKE)`));
     }
-  } catch (err) {
-    const already = collectedDiagnostics.some(d => d.message === err.message);
-    if (!already) logMessage(Diagnostic.error(err.message, 1141));
-  } finally {
-    renderErrorTable(collectedDiagnostics);
-  }
+  });
+
+  renderErrorTable(collectedDiagnostics);
 }
+
 
 // Exponer al window para el botón
 window.analizar = analizar;

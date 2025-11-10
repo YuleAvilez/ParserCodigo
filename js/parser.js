@@ -21,17 +21,23 @@ class Parser {
     }
   }
 
-  parse() {
-    this.log(Diagnostic.info("Iniciando análisis sintáctico..."));
-    this.S();
-    if (this.current().type === ";") this.eat(";");
-    if (this.current().type !== "$") {
-      const msg = `Error: entrada no consumida en '${this.current().value}'`;
-      this.log(Diagnostic.error(msg, 1396));
-      throw new Error(msg);
+    parse() {
+        this.log(Diagnostic.info("Iniciando análisis sintáctico..."));
+        this.S();
+
+        if (this.current().type === ";") this.eat(";");
+        if (this.current().type !== "$") {
+            const msg = `Error: entrada no consumida en '${this.current().value}'`;
+            this.log(Diagnostic.error(msg, 1396));
+            throw new Error(msg);
+        }
+
+        const successMessage = Diagnostic.success("Análisis sintáctico completado correctamente.");
+        this.log(successMessage);
+
+        return successMessage;
     }
-    this.log(Diagnostic.success("Análisis sintáctico completado correctamente."));
-  }
+
 
       S() {
         this.eat("REVOKE");
